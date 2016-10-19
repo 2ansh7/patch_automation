@@ -2,6 +2,7 @@
 Magento auto patch download and installation script file.<br>
 OS support : centos 6.x<br>
 Magento version support : 1.6.x - 1.9.x<br>
+Patches Support : 5344, 5994, 6285, 6482, 6788, 7405 v1, 7405 v1.1<br>
 
 <h3>Modules</h3>
 1. Testing prerequisites<br>
