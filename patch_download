@@ -62,6 +62,7 @@ case $patchName in
 	fi	
 	if [ "$7405v1" -eq "0" -a "$7405v11" -eq "0" ]; then p7405=downloaded; fi
 	*)
+	echo "Patch $patchName not supported yet."
 	;;
 esac
 }

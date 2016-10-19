@@ -1,0 +1,136 @@
+#!/bin/bash
+
+# Patches which are left with unknown status
+function patch_unknown () {
+
+if [ "$p5344" == "unknown" ]; then
+	patch_download 5344
+	echo "Status of patch 5344 is Unknown. It is not applied via this script but kept downloaded in $MAGDIR . Check it manually."
+fi	
+if [ "$p5994" == "unknown" ]; then
+	patch_download 5994
+	echo "Status of patch 5994 is Unknown. It is not applied via this script but kept downloaded in $MAGDIR . Check it manually."
+fi	
+if [ "$p6285" == "unknown" ]; then
+	patch_download 6285
+	echo "Status of patch 6285 is Unknown. It is not applied via this script but kept downloaded in $MAGDIR . Check it manually."
+fi	
+if [ "$p6482" == "unknown" ]; then
+	patch_download 6482
+	echo "Status of patch 6482 is Unknown. It is not applied via this script but kept downloaded in $MAGDIR . Check it manually."
+fi	
+if [ "$p6788" == "unknown" ]; then
+	patch_download 6788
+	echo "Status of patch 6788 is Unknown. It is not applied via this script but kept downloaded in $MAGDIR . Check it manually."
+fi	
+if [ "$p7405" == "unknown" ]; then
+	patch_download 7405
+	echo "Status of patch 7405 is Unknown. It is not applied via this script but kept downloaded in $MAGDIR . Check it manually."
+fi	
+
+}
+
+function patch_apply () {
+
+cp -f $MAGEDIR/../patching $MAGEDIR/
+cd $MAGEDIR
+mkdir $MAGEDIR/../log/
+
+if [ "$p5344" == "downloaded" ]; then
+F5344="pf_5344_$major$minor$revision$patch"
+bash ${!F5344} > $MAGEDIR/../log/5344 2>&1 
+if [ "$?" -eq "0" ]; then p5344='applied'; else p5344='unapplied'; fi
+fi
+
+if [ "$p5994" == "downloaded" ]; then 
+F5994="pf_5994_$major$minor$revision$patch"
+bash ${!F5994} > $MAGEDIR/../log/5994 2>&1 
+if [ "$?" -eq "0" ]; then p5994='applied'; else p5994='unapplied'; fi
+fi
+
+if [ "$p6285" == "downloaded" ]; then 
+F6285="pf_6285_$major$minor$revision$patch"
+bash ${!F6285} > $MAGEDIR/../log/6285 2>&1 
+if [ "$?" -eq "0" ]; then p6285='applied'; else p6285='unapplied'; fi
+fi
+
+if [ "$p6482" == "downloaded" ]; then 
+F6482="pf_6482_$major$minor$revision$patch"
+bash ${!F6482} > $MAGEDIR/../log/6482 2>&1 
+if [ "$?" -eq "0" ]; then p6482='applied'; else p6482='unapplied'; fi
+fi
+
+if [ "$p6788" == "downloaded" ]; then 
+F6788="pf_6788_$major$minor$revision$patch"
+bash ${!F6788} > $MAGEDIR/../log/6788 2>&1 
+if [ "$?" -eq "0" ]; then p6788='applied'; else p6788='unapplied'; fi
+fi
+
+if [ "$p7405" == "downloaded" ]; then
+ 
+	if [ "$p7405v1" == "downloaded" ]; then 
+	F7405v1="pf_7405v1_$major$minor$revision$patch"
+	bash ${!F7405v1} > $MAGEDIR/../log/7405 2>&1 
+	if [ "$?" -eq "0" ]; then p7405v1='applied'; else p7405v1='unapplied'; fi
+	fi
+
+	if [ "$p7405v11" == "downloaded" ]; then 
+	F7405v11="pf_7405v11_$major$minor$revision$patch"
+	bash ${!F7405v11} > $MAGEDIR/../log/7405 2>&1 
+	if [ "$?" -eq "0" ]; then p7405v11='applied'; else p7405v11='unapplied'; fi
+	fi
+
+	if [ "$p7405v1" == "applied" -a "$p7405v11" == "applied" ]; then
+	p7405='applied'
+	elif [ "$p7405v1" == "unapplied" -a "$p7405v11" == "unapplied" ]; then
+	p7405='unapplied'
+	elif [ "$p7405v1" == "applied" -a "$p7405v11" == "unapplied" ]; then
+	p7405='unapplied'
+	elif [ "$p7405v1" == "unapplied" -a "$p7405v11" == "applied" ]; then
+	p7405='unapplied'
+	else
+	true
+	fi
+fi
+}
+
+function patch_fix () {
+
+if [ "$p6788" == "applied" ]; then 
+git clone https://github.com/rhoerr/supee-6788-toolbox.git $MAGEDIR/../patching/
+cp $MAGEDIR/../patching/supee-6788-toolbox/fixSUPEE6788.php $MAGEDIR/shell/ 
+cd $MAGEDIR/shell/ ; $PHP -f fixSUPEE6788.php -- fixWhitelists > 2>&1 $MAGEDIR/../patching/fixSUPEE6788.log
+if [ "$?" -eq "0" ]; then echo "6788 Fix applied."; fi
+else
+git clone https://github.com/rhoerr/supee-6788-toolbox.git $MAGEDIR/../patching/
+#download fix
+#generate report
+# Apply the patch
+# Copy the file 
+# run the command.
+##
+fi
+
+if [ "$p7405" == "applied" ]; then
+cd $MAGEDIR/app/design/frontend
+find . -name "register.phtml" > $MAGEDIR/../patching/fixSUPEE7405.log
+while read line; do 
+if [ -f "$line" ]; then 
+grep getPostActionUrl $line > /dev/null 2>&1
+f1=$?
+grep -A1 "getPostActionUrl" $line | grep "getBlockHtml" | grep "formkey" > /dev/null 2>&1
+f2=$?
+if [ "$f1" -eq "0" -a "$f2" -ne "0" ]; then
+sed -i "/getPostActionUrl/a <?php echo \$this->getBlockHtml('formkey'); ?>" $line
+fi
+fi
+done < $MAGEDIR/../patching/fixSUPEE7405.log
+else
+# generare report what have to check after applying it manually
+fi
+
+}
+
+function generate_report () {
+## generate report of unapplied patches only.
+}
