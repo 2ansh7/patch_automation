@@ -1,0 +1,229 @@
+#!/bin/bash
+
+# detect pathes remaining on website.
+function fetch_patches () {
+
+$MAGESCAN scan:patch $WEBSITE | grep Unpatched >/dev/null 2>&1
+s4=$?
+if [ "$s4" -ne "0" ]; then
+case $major in
+	1)
+	case $minor in
+		9)
+		case $revision in
+			2)
+			case $patch in
+				3)
+				pf_7405v11_1923=`curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.9.2.3" | grep "7405" | grep "v1.1"`
+				;;
+				2)
+				curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.9.2.2" | grep "7405" > $MAGEDIR/../patching/patchfiles
+				pf_7405v11_1922=`grep "v1.1" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+				pf_7405v1_1922=`grep "v1" $MAGEDIR/../patching/patchfiles | head -1` > /dev/null 2>&1
+				;;
+				1)
+				curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.9.2" > $MAGEDIR/../patching/patchfiles
+				pf_7405v11_1921=`grep "1.9.2.1" $MAGEDIR/../patching/patchfiles | grep "7405" | grep "v1.1"` > /dev/null 2>&1
+				pf_7405v1_1921=`grep "1.9.2" $MAGEDIR/../patching/patchfiles | grep "7405" | grep 'v1' | head -1` > /dev/null 2>&1
+				pf_6788_1921=`grep "1.9.2.1" $MAGEDIR/../patching/patchfiles | grep "6788"` > /dev/null 2>&1
+				;;
+				0)
+				curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.9" > $MAGEDIR/../patching/patchfiles
+				pf_7405v11_1920=`grep "1.9.2.0" $MAGEDIR/../patching/patchfiles | grep "7405" | grep "v1.1"` > /dev/null 2>&1
+				pf_7405v1_1920=`grep "1.9.2" $MAGEDIR/../patching/patchfiles | grep "7405" | grep 'v1' | head -1` > /dev/null 2>&1
+				pf_6788_1920=`grep "1.9.2.0" $MAGEDIR/../patching/patchfiles | grep "6788"` > /dev/null 2>&1
+				pf_6482_1920=`grep "1.9" $MAGEDIR/../patching/patchfiles | grep "6482"` > /dev/null 2>&1
+				pf_6285_1920=`grep "1.9" $MAGEDIR/../patching/patchfiles | grep "6285"` > /dev/null 2>&1
+				;;
+				*)
+				echo "Magento Version not found : $major.$minor.$revision.$patch";
+				exit 1
+				;;
+			esac
+			;;	
+			1)	
+			case $patch in 
+				1)
+				curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.9" > $MAGEDIR/../patching/patchfiles
+				pf_7405v11_1911=`grep "1.9.1.1" $MAGEDIR/../patching/patchfiles | grep "7405" | grep "v1.1"` > /dev/null 2>&1
+				pf_7405v1_1911=`grep "1.9.1" $MAGEDIR/../patching/patchfiles | grep "7405" | grep 'v1' | head -1` > /dev/null 2>&1
+				pf_6788_1911=`grep "1.9.1.1" $MAGEDIR/../patching/patchfiles | grep "6788"` > /dev/null 2>&1
+				pf_6482_1911=`grep "6482" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+				pf_6285_1911=`grep "6285" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+				pf_5994_1911=`curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.6" | grep "5994"`
+				;;
+				0)
+				curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.9" > $MAGEDIR/../patching/patchfiles
+				pf_7405v11_1910=`grep "1.9.1.1" $MAGEDIR/../patching/patchfiles | grep "7405" | grep "v1.1"` > /dev/null 2>&1
+				pf_7405v1_1910=`grep "1.9.1" $MAGEDIR/../patching/patchfiles | grep "7405" | grep 'v1' | head -1` > /dev/null 2>&1
+				pf_6788_1910=`grep "1.9.1.0" $MAGEDIR/../patching/patchfiles | grep "6788"` > /dev/null 2>&1
+				pf_6482_1910=`grep "6482" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+				pf_6285_1910=`grep "6285" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+				pf_5994_1910=`curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.6" | grep "5994"`
+				pf_5344_1910=`curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.8" | grep "53"`
+				;;
+				*)
+				echo "Magento Version not found : $major.$minor.$revision.$patch";
+				exit 1
+				;;
+			esac
+			;;
+			0)
+			case $patch in
+                                1)
+				curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.9" > $MAGEDIR/../patching/patchfiles
+				pf_7504v11_1901=`grep "1.9.0.1" $MAGEDIR/../patching/patchfiles | grep "7405" | grep "v1.1"` > /dev/null 2>&1
+                                pf_7405v1_1901=`grep "1.9.0" $MAGEDIR/../patching/patchfiles | grep "7405" | grep 'v1' | head -1` > /dev/null 2>&1
+				pf_6788_1901=`grep "1.9.0.1" $MAGEDIR/../patching/patchfiles | grep "6788"` > /dev/null 2>&1
+				pf_6482_1901=`grep "6482" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+				pf_6285_1901=`grep "1.9" | grep "6285" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+				pf_5994_1901=`curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.6" | grep "5994"`
+				pf_5344_1901=`curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.8" | grep "53"`
+				;;
+                                0)
+				curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.9" > $MAGEDIR/../patching/patchfiles
+				pf_7504v11_1900=`grep "1.9.0.1" $MAGEDIR/../patching/patchfiles | grep "7405" | grep "v1.1"` > /dev/null 2>&1
+                                pf_7405v1_1901=`grep "1.9.0" $MAGEDIR/../patching/patchfiles | grep "7405" | grep 'v1' | head -1` > /dev/null 2>&1
+                                pf_6788_1900=`grep "1.9.0" $MAGEDIR/../patching/patchfiles | grep "6788"` > /dev/null 2>&1
+                                pf_6482_1900=`grep "6482" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+                                pf_6285_1900=`grep "6285" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+				pf_5994_1900=`curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.6" | grep "5994"`
+                                pf_5344_1900=`curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.8" | grep "53"`
+                                ;;
+				*)
+				echo "Magento Version not found : $major.$minor.$revision.$patch";
+				exit 1
+				;;
+                        esac
+                        ;;
+			*)
+			echo "Magento Version not found : $major.$minor.$revision.$patch";
+			exit 1
+			;;
+		esac	
+		;;
+		8)
+		case $revision in
+			1)
+			curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.8" > $MAGEDIR/../patching/patchfiles 
+			pf_7405v11_1810=`grep "1.8.1.0" $MAGEDIR/../patching/patchfiles | grep "7405" | grep "v1.1"` > /dev/null 2>&1
+			pf_7405v1_1810=`grep "1.8.1" $MAGEDIR/../patching/patchfiles | grep "7405" | grep 'v1' | head -1` > /dev/null 2>&1
+                        pf_6788_1810=`grep "1.8.1" $MAGEDIR/../patching/patchfiles | grep "6788"` > /dev/null 2>&1
+                        pf_6482_1810=`curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.9" | grep "6482"`
+			pf_6285_1810=`grep "1.8.1.0" $MAGEDIR/../patching/patchfiles | grep "6285"` > /dev/null 2>&1
+                        pf_5994_1810=`curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.6" | grep "5994"`
+                        pf_5344_1810=`grep "53" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+			;;
+			0)
+			curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.8" > $MAGEDIR/../patching/patchfiles 
+			pf_7405v11_1800=`grep "1.8.0.0" $MAGEDIR/../patching/patchfiles | grep "7405" | grep "v1.1"` > /dev/null 2>&1
+			pf_7405v1_1800=`grep "1.8.0" $MAGEDIR/../patching/patchfiles | grep "7405" | grep 'v1' | head -1` > /dev/null 2>&1
+                        pf_6788_1800=`grep "1.8.0" $MAGEDIR/../patching/patchfiles | grep "6788"` > /dev/null 2>&1
+                        pf_6482_1800=`grep "6482" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+			pf_6285_1800=`grep "1.8.0.0" $MAGEDIR/../patching/patchfiles | grep "6285"` > /dev/null 2>&1
+                        pf_5994_1800=`curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.6" | grep "5994"`
+                        pf_5344_1800=`grep "53" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+			;;
+			*)
+			echo "Magento Version not found : $major.$minor.$revision.$patch";
+			exit 1
+			;;
+		esac
+		;;
+		7)
+		case $revision in
+			0)
+			case $patch in
+				2)
+				curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.7" > $MAGEDIR/../patching/patchfiles
+				pf_7405v11_1702=`grep "1.7.0.2" $MAGEDIR/../patching/patchfiles | grep "7405" | grep "v1.1"` > /dev/null 2>&1
+				pf_7405v1_1702=`grep "7405" $MAGEDIR/../patching/patchfiles | grep 'v1' | head -1` > /dev/null 2>&1
+                        	pf_6788_1702=`grep "1.7.0.2" $MAGEDIR/../patching/patchfiles | grep "6788"` > /dev/null 2>&1
+                        	pf_6482_1702=`curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.8" | grep "6482"`
+				pf_6285_1702=`grep "6285" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+                        	pf_5994_1701=`curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.6" | grep "5994"`
+                        	pf_5344_1701=`grep "53" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+				;;
+				1)
+				curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.7" > $MAGEDIR/../patching/patchfiles
+				pf_7405v11_1701=`grep "1.7.0.1" $MAGEDIR/../patching/patchfiles | grep "7405" | grep "v1.1"` > /dev/null 2>&1
+				pf_7405v1_1701=`grep "7405" $MAGEDIR/../patching/patchfiles | grep 'v1' | head -1` > /dev/null 2>&1
+                        	pf_6788_1701=`grep "1.7.0.1" $MAGEDIR/../patching/patchfiles | grep "6788"` > /dev/null 2>&1
+                        	pf_6482_1701=`curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.8" | grep "6482"`
+				pf_6285_1701=`grep "6285" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+                        	pf_5994_1701=`curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.6" | grep "5994"`
+                        	pf_5344_1701=`grep "53" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+				;;
+				0)
+				curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.7" > $MAGEDIR/../patching/patchfiles
+				pf_7405v11_1700=`grep "1.7.0.0" $MAGEDIR/../patching/patchfiles | grep "7405" | grep "v1.1"` > /dev/null 2>&1
+				pf_7405v1_1700=`grep "7405" $MAGEDIR/../patching/patchfiles | grep 'v1' | head -1` > /dev/null 2>&1
+                       	 	pf_6788_1700=`grep "1.7.0.1" $MAGEDIR/../patching/patchfiles | grep "6788"` > /dev/null 2>&1
+                        	pf_6482_1700=`curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.8" | grep "6482"`
+				pf_6285_1700=`curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.9" | grep "6285"`
+                        	pf_5994_1700=`curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.6" | grep "5994"`
+                        	pf_5344_1700=`grep "53" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+				;;
+				*)
+				echo "Magento Version not found : $major.$minor.$revision.$patch";
+				exit 1
+				;;
+			esac		
+			;;
+			*)
+			echo "Magento Version not found : $major.$minor.$revision.$patch";
+			exit 1
+			;;
+		esac
+		;;
+		6)
+		case $revision in
+			2)
+			curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.6" > $MAGEDIR/../patching/patchfiles
+			pf_7405v11_1620=`grep "1.6.2.0" $MAGEDIR/../patching/patchfiles | grep "7405" | grep "v1.1"` > /dev/null 2>&1
+			pf_7405v1_1620=`grep "1.6.2" $MAGEDIR/../patching/patchfiles | grep "7405" | grep 'v1' | head -1` > /dev/null 2>&1
+                        pf_6788_1620=`grep "1.6.2.0" $MAGEDIR/../patching/patchfiles | grep "6788"` > /dev/null 2>&1
+                        pf_6482_1620=`grep "1.6.2" $MAGEDIR/../patching/patchfiles | grep "6482"` > /dev/null 2>&1
+			pf_6285_1620=`grep "6285" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+                        pf_5994_1620=`grep "5994" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+                        pf_5344_1620=`grep "1.6.1" $MAGEDIR/../patching/patchfiles | grep "53"` > /dev/null 2>&1
+			;;
+			1)
+			curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.6" > $MAGEDIR/../patching/patchfiles
+			pf_7405v11_1610=`grep "1.6.1.0" $MAGEDIR/../patching/patchfiles | grep "7405" | grep "v1.1"` > /dev/null 2>&1
+			pf_7405v1_1610=`grep "1.6.1" $MAGEDIR/../patching/patchfiles | grep "7405" | grep 'v1' | head -1` > /dev/null 2>&1
+                        pf_6788_1610=`grep "1.6.1.0" $MAGEDIR/../patching/patchfiles | grep "6788"` > /dev/null 2>&1
+                        pf_6482_1610=`grep "1.6.2" $MAGEDIR/../patching/patchfiles | grep "6482"` > /dev/null 2>&1
+			pf_6285_1610=`grep "6285" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+                        pf_5994_1610=`grep "5994" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+                        pf_5344_1610=`grep "1.6.1" $MAGEDIR/../patching/patchfiles | grep "53"` > /dev/null 2>&1
+			;;
+			0)
+			curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/type/ce-patch | rev | awk '{print $1}' | rev | grep "1.6" > $MAGEDIR/../patching/patchfiles
+			pf_7405v11_1600=`grep "1.6.0.0" $MAGEDIR/../patching/patchfiles | grep "7405" | grep "v1.1"` > /dev/null 2>&1
+			pf_7405v1_1600=`grep "1.6.0" $MAGEDIR/../patching/patchfiles | grep "7405" | grep 'v1' | head -1` > /dev/null 2>&1
+                        pf_6788_1600=`grep "1.6.0.0" $MAGEDIR/../patching/patchfiles | grep "6788"` > /dev/null 2>&1
+                        pf_6482_1600=`grep "1.6.0" $MAGEDIR/../patching/patchfiles | grep "6482"` > /dev/null 2>&1
+			pf_6285_1600=`grep "6285" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+                        pf_5994_1600=`grep "5994" $MAGEDIR/../patching/patchfiles` > /dev/null 2>&1
+                        pf_5344_1600=`grep "1.6.0" $MAGEDIR/../patching/patchfiles | grep "53"` > /dev/null 2>&1
+			;;
+			*)
+			echo "Magento Version not found : $major.$minor.$revision.$patch";
+			exit 1
+			;;
+		esac
+		;;
+		*)
+		echo "Magento Version is not supported yet : $major.$minor.$revision.$patch";
+		exit 0
+		;;
+esac
+rm -f $MAGEDIR/../patching/patchfiles
+else
+echo "Either Store (magento version : $major.$minor.$revision.$patch) is already patched Or Its version is not supportable yet."
+echo "Only magento versions above 1.6.x are supportable now."
+exit 0
+fi
+
+}

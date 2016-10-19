@@ -1,0 +1,101 @@
+#!/bin/bash
+
+# checking the status of patched applied or unapplied
+function patch_scan () {
+
+$MAGESCAN scan:patch $WEBSITE > /tmp/patches
+
+for patch_name in 5344 5994 6285 6482 6788 7405
+do
+case $patch_name in
+	5344)
+	grep 5344 /tmp/patches | grep Unpatched
+        if [ "$?" -eq "0" ]; then patch_download 5344; fi
+        if [ $p5344 != "downloaded" ]; then
+        grep 5344 /tmp/patches | grep Patched
+                if [ "$?" -eq "0" ]; then p5344="patched"; fi
+        grep 5344 /tmp/patches | grep Unknown
+                if [ "$?" -eq "0" ]; then p5344="unknown"; fi
+        fi
+	;;
+	5994)
+	grep 5994 /tmp/patches | grep Unpatched
+        if [ "$?" -eq "0" ]; then patch_download 5994; fi
+        if [ $p5994 != downloaded ]; then
+        grep 5994 /tmp/patches | grep Patched
+                if [ "$?" -eq "0" ]; then
+                p5994="patched"
+                if [ "$p5344" == "unknown" ]; then p5344="patched"; fi
+                fi
+        grep 5994 /tmp/patches | grep Unknown
+                if [ "$?" -eq "0" ]; then p5994="unknown"; fi
+        fi
+	;;
+	6285)
+	grep 6285 /tmp/patches | grep Unpatched
+        if [ "$?" -eq "0" ]; then patch_download 6285; fi
+        if [ "$p6285" != "downloaded" ]; then
+        grep 6285 /tmp/patches | grep Patched
+                if [ "$?" -eq "0" ]; then
+                p6285="patched"
+                if [ "$p5344" == "unknown" ]; then p5344="patched"; fi
+                if [ "$p5994" == "unknown" ]; then p5994="patched"; fi
+                fi
+        grep 6285 /tmp/patches | grep Unknown
+                if [ "$?" -eq "0" ]; then p6285="unknown"; fi
+        fi	
+	;;
+	6482)
+	grep 6482 /tmp/patches | grep Unpatched
+        if [ "$?" -eq "0" ]; then patch_download 6482; fi
+        if [ "$p6482" != "downloaded" ]; then
+        grep 6482 /tmp/patches | grep Patched
+                if [ "$?" -eq "0" ]; then
+                p6482="patched"
+                if [ "$p5344" == "unknown" ]; then p5344="patched"; fi
+                if [ "$p5994" == "unknown" ]; then p5994="patched"; fi
+                if [ "$p6285" == "unknown" ]; then p5994="patched"; fi
+                fi
+        grep 6482 /tmp/patches | grep Unknown
+                if [ "$?" -eq "0" ]; then p6482="unknown"; fi
+        fi
+	;;
+	6788)
+	grep 6788 /tmp/patches | grep Unpatched
+        if [ "$?" -eq "0" ]; then patch_download 6788; fi
+        if [ "$p6788" != "downloaded" ]; then
+        grep 6788 /tmp/patches | grep Patched
+                if [ "$?" -eq "0" ]; then
+                p6788="patched"
+                if [ "$p5344" == "unknown" ]; then p5344="patched"; fi
+                if [ "$p5994" == "unknown" ]; then p5994="patched"; fi
+                if [ "$p6285" == "unknown" ]; then p6285="patched"; fi
+                if [ "$p6482" == "unknown" ]; then p6482="patched"; fi
+                fi
+        grep 6788 /tmp/patches | grep Unknown
+                if [ "$?" -eq "0" ]; then p6788="unknown"; fi
+        fi	
+	;;
+	7405)
+	grep 7405 /tmp/patches | grep Unpatched
+        if [ "$?" -eq "0" ]; then patch_download 7405; fi
+        if [ "$p7405" != "downloaded" ]; then
+        grep 7405 /tmp/patches | grep Patched
+                if [ "$?" -eq "0" ]; then
+                p7405="patched"
+                if [ "$p5344" == "unknown" ]; then p5344="patched"; fi
+                if [ "$p5994" == "unknown" ]; then p5994="patched"; fi
+                if [ "$p6285" == "unknown" ]; then p6285="patched"; fi
+                if [ "$p6482" == "unknown" ]; then p6482="patched"; fi
+                if [ "$p6788" == "unknown" ]; then p6482="patched"; fi
+                fi
+        grep 7405 /tmp/patches | grep Unknown
+                if [ "$?" -eq "0" ]; then 7405p=unknown; fi
+        fi
+	;;
+	*)
+	;;
+esac
+done
+
+}

@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# download the prepatched and origional source files
+function download_files () {
+
+file=`curl -s https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/info/filter/version/$major.$minor.$revision.$patch | grep tar.gz | rev | cut -d' ' -f1 | rev | head -1`
+
+curl -s -o $MAGEDIR/../patching https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/file/$file 
+
+git clone https://github.com/magecomp/Magento-Pre-Patched-Files.git $MAGEDIR/../patching/
+
+}
+
+function patch_download () {
+patchName=$1
+case $patchName in
+	5344)
+	P5344="pf_5344_$major$minor$revision$patch"
+	if [ ! -z "${!P5344}" ]; then
+	wget -q -P $MAGEDIR/../patching/ "https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/file/${!P5344}"
+	if [ "$?" -eq "0" ]; then p5344=downloaded; fi
+	fi
+	;;
+	5994)
+	P5994="pf_5994_$major$minor$revision$patch"
+	if [ ! -z "${!P5994}" ]; then
+	wget -q -P $MAGEDIR/../patching/ "https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/file/${!P5994}"
+	if [ "$?" -eq "0" ]; then p5994=downloaded; fi
+	fi
+	;;
+	6285)
+	P6285="pf_6285_$major$minor$revision$patch"
+	if [ ! -z "${!P6285}" ]; then
+	wget -q -P $MAGEDIR/../patching/ "https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/file/${!P6285}"
+	if [ "$?" -eq "0" ]; then p6285=downloaded; fi
+	fi
+	;;
+	6482)
+	P6482="pf_6482_$major$minor$revision$patch"
+	if [ ! -z "${!P6482}" ]; then
+	wget -q -P $MAGEDIR/../patching/ "https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/file/${!P6482}"
+	if [ "$?" -eq "0" ]; then p6482=downloaded; fi
+	fi
+	;;
+	6788)
+	P6788="pf_6788_$major$minor$revision$patch"
+	if [ ! -z "${!P6788}" ]; then
+	wget -q -P $MAGEDIR/../patching/ "https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/file/${!P6788}"
+	if [ "$?" -eq "0" ]; then p6788=downloaded; fi
+	fi
+	;;
+	7405)
+	P7405v1="pf_7405v1_$major$minor$revision$patch"
+	P7405v11="pf_7405v11_$major$minor$revision$patch"
+	if [ -z "${!P7405v1}" ]; then
+	wget -q -P $MAGEDIR/../patching/ "https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/file/${P7405v1}"
+	if [ "$?" -eq "0" ]; then p7405v1=downloaded; fi
+	fi
+	if [ -z "${!P7405v11}" ]; then
+	wget -q -P $MAGEDIR/../patching/ "https://$MAG_ID:$TOKEN@www.magentocommerce.com/products/downloads/file/${!P7405v11}"
+	if [ "$?" -eq "0" ]; then p7405v11=downloaded; fi
+	fi	
+	if [ "$7405v1" -eq "0" -a "$7405v11" -eq "0" ]; then p7405=downloaded; fi
+	*)
+	;;
+esac
+}

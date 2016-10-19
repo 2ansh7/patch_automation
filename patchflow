@@ -1,0 +1,11 @@
+prerequisite
+fetch version
+fetch website name
+fetch patches name
+patch scan
+download files
+patch download
+patch apply
+patch unknown
+autohandel pre know issues
+generate report

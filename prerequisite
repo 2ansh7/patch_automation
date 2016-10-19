@@ -1,0 +1,151 @@
+#!/bin/bash
+
+function install_magerun () {
+
+wget -q https://files.magerun.net/n98-magerun.phar -P /root/bin
+if [ $? -ne 0 ]; then
+echo -e "\e[31mMagerun Failed\e[39m.\nScript won't continue from here."
+sleep 3s
+exit 1
+fi
+chmod ug+x /root/bin/n98-magerun.phar
+MAGERUN="/root/bin/n98-magerun.phar"
+
+}
+
+function install_magescan () {
+
+wget -q https://github.com/steverobbins/magescan/releases/download/v1.12.3/magescan.phar -P /root/bin
+if [ $? -ne 0 ]; then
+echo -e "\e[31mMageScan Failed\e[39m.\nScript won't continue from here."
+sleep 3s
+exit 1
+fi
+chmod ug+x /root/bin/magescan.phar
+MAGESCAN="/root/bin/magescan.phar"
+
+}
+
+function check_php () {
+
+rpm -q php >/dev/null 2>&1
+s1=$?
+php -v >/dev/null 2>&1
+s2=$?
+
+if [ $s1 -ne 0 -a $s2 -ne 0 ]; then
+echo -en "\e[33m Php not found.\e[39m Do you still want to continue [Y/N] : "
+read s3
+verify_php
+else
+PHP="php"
+fi
+
+MAGERUN="$PHP $MAGERUN"
+MAGESCAN="$PHP $MAGESCAN"
+
+} 
+
+function verify_php () {
+
+case $s3 in
+	Y|y|yes|YES|Yes)
+	echo -en "Enter the path to php utility (i.e php command) : "
+	read pHp
+	if [ -f "$pHp" ]; then
+	echo "you are using : `$pHp -v | awk 'NR==1{print $1 $2}'`"
+	PHP="$pHp"
+	else 
+	echo "Utility path you entered does not exists."
+	if [ "$count" -lt "2" ]; then 
+	count=$(( count + 1 ))
+	check_php
+	else
+	exit 1
+	fi 
+	fi
+	;;
+	N|n|no|No|NO)
+	exit 1
+	;;
+	*)
+	echo "Your choice does not match the available choices."
+	exit
+	;;
+esac
+}
+
+# check for some prerequisite
+function prerequisite () {
+
+if [ -d "/root/bin" ]; then 
+mkdir /root/bin
+install_magerun
+install_magescan
+else
+if [ -f "/root/bin/n98-magerun.phar" ]; then install_magerun; else MAGERUN="/root/bin/n98-magerun.phar"; fi
+if [ -f "/root/bin/magecan.phar" ]; then install_magescan; else MAGESCAN="/root/bin/magescan.phar"; fi
+fi
+
+rpm -q curl >/dev/null 2>&1
+if [ "$?" -ne "0" ]; then yum install curl -y >/dev/null 2>&1; fi
+rpm -q wget >/dev/null 2>&1
+if [ "$?" -ne "0" ]; then yum install wget -y >/dev/null 2>&1; fi
+rpm -q patch >/dev/null 2>&1
+if [ "$?" -ne "0" ]; then yum install patch -y >/dev/null 2>&1; fi
+rpm -q git >/dev/null 2>&1
+if [ "$?" -ne "0" ]; then yum install git -y >/dev/null 2>&1; fi
+
+count=0
+check_php
+}
+
+# magento version 
+function fetch_version () {
+
+major=`$MAGERUN --skip-root-check --root-dir="$MAGEDIR" sys:info --format name -- Version | cut -d'.' -f1`
+minor=`$MAGERUN --skip-root-check --root-dir="$MAGEDIR" sys:info --format name -- Version | cut -d'.' -f2`
+revision=`$MAGERUN --skip-root-check --root-dir="$MAGEDIR" sys:info --format name -- Version | cut -d'.' -f3`
+patch=`$MAGERUN --skip-root-check --root-dir="$MAGE_DIR" sys:info --format name -- Version | cut -d'.' -f4`
+
+}
+
+
+############### Begin script ################
+# run as root
+if [ `id -u` -ne 0 ]; then echo -e "Running script needs superuser privileges. \nRun command \"sudo su -\" to become superuser."; exit; fi
+
+# check for magento files
+if [ -z "$1" ]; then
+echo -e "\nUsage : /bin/bash script.sh <MAGE DIR. PATH>"
+elif [ ! -d "$1" -a ! -f "$1/app/etc/local.xml" -a ! -f "$1/app/Mage.php" ]; then
+echo -e "\nDIRECTORY : $1 seems not contain magento 1.X files."
+else
+MAGEDIR=$1
+fi
+
+# magento download api id and access token
+MAG_ID='MAG003454181'
+TOKEN='f91eeadf717a20f4c820e82aa97f50669a6f72c4'
+
+# check for prerequisite for patching
+prerequisite
+
+# website name
+WEBSITE=`$MAGERUN --skip-root-check --root-dir="$MAGEDIR" cache:dir:flush sys:store:config:base-url:list | grep http | cut -d'|' -f4 | xargs | cut -d'/' -f3`
+
+# fetch mageto version
+fetch_version
+
+# tasks need to do before applying patches
+$MAGERUN --skip-root-check --root-dir="$MAGE_DIR" cache:dir:flush >/dev/null 2>&1
+$PHP $MAGEDIR/shell/compiler.php clear >/dev/null 2>&1
+$PHP $MAGEDIR/shell/compiler.php disable >/dev/null 2>&1
+mkdir $MAGEDIR/../patching
+
+# fetch patch files of the specified version
+fetch_patches
+
+# scan for patches & their status on the website
+patch_scan
+
