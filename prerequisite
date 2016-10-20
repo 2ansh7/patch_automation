@@ -83,8 +83,8 @@ mkdir /root/bin
 install_magerun
 install_magescan
 else
-if [ -f "/root/bin/n98-magerun.phar" ]; then install_magerun; else MAGERUN="/root/bin/n98-magerun.phar"; fi
-if [ -f "/root/bin/magecan.phar" ]; then install_magescan; else MAGESCAN="/root/bin/magescan.phar"; fi
+if [ ! -f "/root/bin/n98-magerun.phar" ]; then install_magerun; else MAGERUN="/root/bin/n98-magerun.phar"; fi
+if [ ! -f "/root/bin/magecan.phar" ]; then install_magescan; else MAGESCAN="/root/bin/magescan.phar"; fi
 fi
 
 rpm -q curl >/dev/null 2>&1

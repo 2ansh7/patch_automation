@@ -1,38 +1,8 @@
 #!/bin/bash
 
-# Patches which are left with unknown status
-function patch_unknown () {
-
-if [ "$p5344" == "unknown" ]; then
-	patch_download 5344
-	echo "Status of patch 5344 is Unknown. It is not applied via this script but kept downloaded in $MAGDIR . Check it manually."
-fi	
-if [ "$p5994" == "unknown" ]; then
-	patch_download 5994
-	echo "Status of patch 5994 is Unknown. It is not applied via this script but kept downloaded in $MAGDIR . Check it manually."
-fi	
-if [ "$p6285" == "unknown" ]; then
-	patch_download 6285
-	echo "Status of patch 6285 is Unknown. It is not applied via this script but kept downloaded in $MAGDIR . Check it manually."
-fi	
-if [ "$p6482" == "unknown" ]; then
-	patch_download 6482
-	echo "Status of patch 6482 is Unknown. It is not applied via this script but kept downloaded in $MAGDIR . Check it manually."
-fi	
-if [ "$p6788" == "unknown" ]; then
-	patch_download 6788
-	echo "Status of patch 6788 is Unknown. It is not applied via this script but kept downloaded in $MAGDIR . Check it manually."
-fi	
-if [ "$p7405" == "unknown" ]; then
-	patch_download 7405
-	echo "Status of patch 7405 is Unknown. It is not applied via this script but kept downloaded in $MAGDIR . Check it manually."
-fi	
-
-}
-
 function patch_apply () {
 
-cp -f $MAGEDIR/../patching $MAGEDIR/
+cp -f $MAGEDIR/../patching/* $MAGEDIR/
 cd $MAGEDIR
 mkdir $MAGEDIR/../log/
 
@@ -103,12 +73,6 @@ cd $MAGEDIR/shell/ ; $PHP -f fixSUPEE6788.php -- fixWhitelists > 2>&1 $MAGEDIR/.
 if [ "$?" -eq "0" ]; then echo "6788 Fix applied."; fi
 else
 git clone https://github.com/rhoerr/supee-6788-toolbox.git $MAGEDIR/../patching/
-#download fix
-#generate report
-# Apply the patch
-# Copy the file 
-# run the command.
-##
 fi
 
 if [ "$p7405" == "applied" ]; then
@@ -131,6 +95,3 @@ fi
 
 }
 
-function generate_report () {
-## generate report of unapplied patches only.
-}
